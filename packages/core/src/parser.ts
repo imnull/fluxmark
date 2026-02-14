@@ -420,15 +420,22 @@ export class StreamingParser {
   // ===== Blockquote 处理 =====
 
   private continueBlockquote(line: string, isIncomplete: boolean): void {
+    const current = this.state.currentFragment!;
+    
     // 简化实现：空行结束引用
     if (!line.trim() && !isIncomplete) {
-      this.state.currentFragment!.isComplete = true;
+      current.isComplete = true;
       this.finalizeCurrentFragment();
       this.advancePosition('\n');
       return;
     }
 
-    this.state.currentFragment!.rawContent += '\n' + line;
+    current.rawContent += '\n' + line;
+    // 更新 data.content 为完整的 rawContent（去掉 > 前缀）
+    (current.data as { content: string }).content = current.rawContent
+      .split('\n')
+      .map(l => l.replace(/^>\s?/, ''))
+      .join('\n');
     this.advancePosition('\n');
     this.advancePosition(line);
   }
