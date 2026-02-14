@@ -490,15 +490,57 @@ export class StreamingParser {
 
   // ===== 图片处理 =====
 
+  // 匹配链接包裹图片的正则: [![alt](img)](link) 或 [![alt](img "title")](link)
+  private static readonly LINK_IMAGE_REGEX = /^\[!\[([^\]]*)\]\(([^\s)]+)(?:\s+"([^"]*)")?\)\]\(([^\s)]+)\)/;
+
   private splitImages(fragment: Fragment): Fragment[] {
     const content = fragment.rawContent;
-    const parts: { type: 'text' | 'image'; content: string; data?: ImageData }[] = [];
+    const parts: { type: 'text' | 'image'; content: string; data?: ImageData & { href?: string } }[] = [];
     
     let lastIndex = 0;
     let match: RegExpExecArray | null;
 
     IMAGE_REGEX.lastIndex = 0;
     while ((match = IMAGE_REGEX.exec(content)) !== null) {
+      // 检查是否是链接包裹的图片: [![alt](img)](link)
+      // 检查 [ 是否在图片标记之前
+      const beforeMatch = content.slice(0, match.index);
+      
+      if (beforeMatch.endsWith('[')) {
+        // 可能是链接包裹的图片，检查从 [ 开始的内容
+        const linkStartIndex = match.index - 1;
+        const linkContent = content.slice(linkStartIndex);
+        const linkMatch = linkContent.match(StreamingParser.LINK_IMAGE_REGEX);
+        
+        if (linkMatch) {
+          // 是链接包裹的图片
+          // 添加图片前的文本（不包括 '['）
+          if (linkStartIndex > lastIndex) {
+            parts.push({
+              type: 'text',
+              content: content.slice(lastIndex, linkStartIndex),
+            });
+          }
+          
+          // 添加带链接的图片
+          parts.push({
+            type: 'image',
+            content: linkMatch[0],
+            data: {
+              alt: linkMatch[1],
+              src: linkMatch[2],
+              title: linkMatch[3],
+              href: linkMatch[4], // 链接 URL
+            },
+          });
+          
+          lastIndex = linkStartIndex + linkMatch[0].length;
+          // 跳过图片本身的匹配，因为已经处理了链接包裹的整体
+          continue;
+        }
+      }
+      
+      // 普通图片处理
       // 添加图片前的文本
       if (match.index > lastIndex) {
         parts.push({

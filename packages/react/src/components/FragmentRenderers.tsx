@@ -204,12 +204,14 @@ interface ImageProps extends BaseFragmentProps {
   src: string;
   alt: string;
   title?: string;
+  href?: string;
 }
 
 export const ImageRenderer = memo(function ImageRenderer({
   src,
   alt,
   title,
+  href,
 }: ImageProps) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
@@ -222,50 +224,64 @@ export const ImageRenderer = memo(function ImageRenderer({
     img.onerror = () => setHasError(true);
   }, [src]);
 
-  if (hasError) {
-    return (
-      <figure className="md-image-wrapper md-image-error">
-        <div 
-          style={{
-            padding: '20px',
-            background: '#f5f5f5',
-            border: '1px dashed #ccc',
-            borderRadius: '4px',
-            textAlign: 'center',
-            color: '#666',
-          }}
-        >
-          <div style={{ fontSize: '24px', marginBottom: '8px' }}>🖼️</div>
-          <div style={{ fontSize: '14px' }}>{alt || '图片加载失败'}</div>
-          <div style={{ fontSize: '12px', color: '#999', marginTop: '4px' }}>
-            {src.slice(0, 50)}...
-          </div>
-        </div>
-        {alt && <figcaption className="md-image-caption">{alt}</figcaption>}
-      </figure>
-    );
-  }
+  const imageElement = hasError ? (
+    <div 
+      style={{
+        padding: '20px',
+        background: '#f5f5f5',
+        border: '1px dashed #ccc',
+        borderRadius: '4px',
+        textAlign: 'center',
+        color: '#666',
+      }}
+    >
+      <div style={{ fontSize: '24px', marginBottom: '8px' }}>🖼️</div>
+      <div style={{ fontSize: '14px' }}>{alt || '图片加载失败'}</div>
+      <div style={{ fontSize: '12px', color: '#999', marginTop: '4px' }}>
+        {src.slice(0, 50)}...
+      </div>
+    </div>
+  ) : (
+    <img
+      src={src}
+      alt={alt}
+      title={title}
+      loading="lazy"
+      className={`md-image ${isLoaded ? 'md-loaded' : 'md-loading'}`}
+      style={{
+        opacity: isLoaded ? 1 : 0.5,
+        transition: 'opacity 0.3s ease',
+        minHeight: '100px',
+        background: '#f0f0f0',
+      }}
+      onLoad={() => setIsLoaded(true)}
+      onError={() => setHasError(true)}
+    />
+  );
 
-  return (
-    <figure className="md-image-wrapper">
-      <img
-        src={src}
-        alt={alt}
-        title={title}
-        loading="lazy"
-        className={`md-image ${isLoaded ? 'md-loaded' : 'md-loading'}`}
-        style={{
-          opacity: isLoaded ? 1 : 0.5,
-          transition: 'opacity 0.3s ease',
-          minHeight: '100px',
-          background: '#f0f0f0',
-        }}
-        onLoad={() => setIsLoaded(true)}
-        onError={() => setHasError(true)}
-      />
+  const content = (
+    <figure className={`md-image-wrapper ${hasError ? 'md-image-error' : ''}`}>
+      {imageElement}
       {alt && <figcaption className="md-image-caption">{alt}</figcaption>}
     </figure>
   );
+
+  // 如果有链接，包裹在 <a> 标签中
+  if (href) {
+    return (
+      <a 
+        href={href} 
+        target="_blank" 
+        rel="noopener noreferrer"
+        className="md-image-link"
+        style={{ textDecoration: 'none' }}
+      >
+        {content}
+      </a>
+    );
+  }
+
+  return content;
 }, () => true); // Image 永远不接受新 props 的更新
 
 // ===== ThematicBreak 渲染器 =====

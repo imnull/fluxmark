@@ -101,6 +101,7 @@ export interface ImageProps extends BaseFragmentProps {
   src: string;
   alt: string;
   title?: string;
+  href?: string;
 }
 
 export interface ThematicBreakProps extends BaseFragmentProps {}

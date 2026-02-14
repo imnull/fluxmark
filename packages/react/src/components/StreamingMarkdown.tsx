@@ -85,7 +85,7 @@ const FragmentRenderer = memo(function FragmentRenderer({
         return { ...baseProps, ...data };
       }
       case 'image': {
-        const data = fragment.data as { src: string; alt: string; title?: string };
+        const data = fragment.data as { src: string; alt: string; title?: string; href?: string };
         return { ...baseProps, ...data };
       }
       case 'incomplete': {

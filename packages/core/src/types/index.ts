@@ -120,6 +120,8 @@ export interface ImageData {
   alt: string;
   src: string;
   title?: string;
+  /** 如果图片被链接包裹，这是链接的 URL */
+  href?: string;
 }
 
 /** Blockquote 数据 */
