@@ -324,8 +324,9 @@ export class StreamingParser {
   private continueCodeBlock(line: string, isIncomplete: boolean): void {
     const current = this.state.currentFragment!;
     
-    // 检查是否结束（``` 且不是未完成的最后一行）
-    if (line === '```' && !isIncomplete) {
+    // 检查是否结束（``` 表示代码块结束）
+    // 注意：即使 isIncomplete 为 true，``` 也表示结束
+    if (line === '```') {
       current.rawContent += '\n' + line;
       current.isComplete = true;
       this.finalizeCodeBlock();

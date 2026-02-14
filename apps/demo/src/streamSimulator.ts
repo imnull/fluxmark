@@ -223,28 +223,65 @@ ORDER BY order_count DESC;
 
 下面的图片在流式渲染过程中应该保持稳定，不会出现闪烁或重新加载。
 
-## 图片 1
+## 单张图片
 
-![风景图片](https://picsum.photos/400/200?random=1)
+![风景图片](https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=200&fit=crop)
 
-这是图片 1 的说明文字。
+这是一张风景图片的说明文字。
 
-## 图片 2
+## 多张连续图片
 
-![城市图片](https://picsum.photos/400/200?random=2)
+![城市夜景](https://images.unsplash.com/photo-1519501025264-65ba15a82390?w=400&h=200&fit=crop)
 
-这是图片 2 的说明文字，图片应该独立渲染，不受周围文本变化影响。
+![山脉风光](https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=400&h=200&fit=crop)
 
-## 图片 3
+![海滨日落](https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400&h=200&fit=crop)
 
-![抽象图片](https://picsum.photos/400/200?random=3)
+## 图文混排示例
 
-## 多张图片并排
+下面这段文字中**嵌入了图片**，展示了如何在段落中间插入图片。
 
-![图片4](https://picsum.photos/200/150?random=4)
-![图片5](https://picsum.photos/200/150?random=5)
+这是一段普通的文字内容。![小图标1](https://via.placeholder.com/80x80/667eea/ffffff?text=IMG1) 图片出现在句子中间。继续输入更多文字，验证图片是否会影响后续内容的渲染。
 
-> 💡 观察：在流式输出过程中，每张图片只会加载一次，后续文本更新不会影响已加载的图片。`,
+再来一段，包含![小图标2](https://via.placeholder.com/80x80/764ba2/ffffff?text=IMG2)多张图片![小图标3](https://via.placeholder.com/80x80/28a745/ffffff?text=IMG3)在文字中。
+
+## 图片列表
+
+下面是一组图片展示：
+
+![图片A](https://via.placeholder.com/150x150/667eea/ffffff?text=A) ![图片B](https://via.placeholder.com/150x150/764ba2/ffffff?text=B) ![图片C](https://via.placeholder.com/150x150/dc3545/ffffff?text=C)
+
+## 带链接的图片
+
+[![点击查看大图](https://via.placeholder.com/300x150/667eea/ffffff?text=Click+Me)](https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=400&fit=crop)
+
+点击图片可以查看大图（如果支持的话）。
+
+## 图文交替布局示例
+
+**第一张图片**：
+
+![交替1](https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=350&h=200&fit=crop)
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. 这段文字紧跟在图片后面。
+
+**第二张图片**：
+
+![交替2](https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=350&h=200&fit=crop)
+
+Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+
+**第三张图片**：
+
+![交替3](https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=350&h=200&fit=crop)
+
+Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.
+
+> 💡 **观察要点**：
+> 1. 每张图片只会加载一次，后续文本更新不会导致重新加载
+> 2. 图片在段落中间时，应该被正确提取为独立分片
+> 3. 多张连续图片应该各自独立渲染，有独立的 key
+> 4. 图片加载完成后，即使后续内容变化，图片也保持稳定`,
   },
 
   long: {
