@@ -15,6 +15,7 @@ function App() {
   const [isStreaming, setIsStreaming] = useState(false);
   const [speed, setSpeed] = useState(50); // 每个 chunk 的延迟（毫秒）
   const [selectedDemo, setSelectedDemo] = useState<string>('mixed');
+  const [showSource, setShowSource] = useState(false); // 是否显示源码对照
   const abortRef = useRef<(() => void) | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -160,6 +161,20 @@ function App() {
           <span style={styles.speedLabel}>{speed}ms</span>
         </div>
 
+        <div style={styles.controlGroup}>
+          <label style={styles.label}>源码对照：</label>
+          <button
+            onClick={() => setShowSource(!showSource)}
+            style={{
+              ...styles.toggleButton,
+              background: showSource ? '#667eea' : '#e9ecef',
+              color: showSource ? 'white' : '#495057',
+            }}
+          >
+            {showSource ? '✓ 开启' : '关闭'}
+          </button>
+        </div>
+
         <div style={styles.buttonGroup}>
           <button 
             onClick={runDemo}
@@ -223,10 +238,29 @@ function App() {
             </div>
             
             {message.role === 'assistant' ? (
-              <StreamingMarkdown 
-                content={message.content}
-                className="chat-message"
-              />
+              showSource ? (
+                // 源码对照模式
+                <div style={styles.sourceView}>
+                  <div style={styles.sourcePanel}>
+                    <div style={styles.sourceLabel}>📄 Markdown 源码</div>
+                    <pre style={styles.sourceCode}>{message.content || '(空)'}</pre>
+                  </div>
+                  <div style={styles.divider} />
+                  <div style={styles.renderPanel}>
+                    <div style={styles.sourceLabel}>🎨 渲染结果</div>
+                    <StreamingMarkdown 
+                      content={message.content}
+                      className="chat-message"
+                    />
+                  </div>
+                </div>
+              ) : (
+                // 正常渲染模式
+                <StreamingMarkdown 
+                  content={message.content}
+                  className="chat-message"
+                />
+              )
             ) : (
               <div style={styles.userContent}>{message.content}</div>
             )}
@@ -354,6 +388,15 @@ const styles: Record<string, React.CSSProperties> = {
     background: '#dc3545',
     color: 'white',
   },
+  toggleButton: {
+    padding: '6px 12px',
+    borderRadius: 6,
+    border: '1px solid #ced4da',
+    fontSize: 14,
+    fontWeight: 500,
+    cursor: 'pointer',
+    transition: 'all 0.2s',
+  },
   chatContainer: {
     flex: 1,
     overflow: 'auto',
@@ -405,6 +448,47 @@ const styles: Record<string, React.CSSProperties> = {
   userContent: {
     fontSize: 15,
     lineHeight: 1.5,
+  },
+  // 源码对照视图样式
+  sourceView: {
+    display: 'flex',
+    gap: 16,
+    flexDirection: 'row' as const,
+  },
+  sourcePanel: {
+    flex: 1,
+    minWidth: 0,
+  },
+  renderPanel: {
+    flex: 1,
+    minWidth: 0,
+  },
+  divider: {
+    width: 1,
+    background: '#e9ecef',
+  },
+  sourceLabel: {
+    fontSize: 12,
+    fontWeight: 600,
+    color: '#6c757d',
+    marginBottom: 8,
+    textTransform: 'uppercase' as const,
+    letterSpacing: '0.5px',
+  },
+  sourceCode: {
+    margin: 0,
+    padding: 12,
+    background: '#f8f9fa',
+    borderRadius: 6,
+    fontSize: 13,
+    fontFamily: '"SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace',
+    lineHeight: 1.5,
+    overflow: 'auto',
+    maxHeight: 400,
+    border: '1px solid #e9ecef',
+    color: '#333',
+    whiteSpace: 'pre-wrap' as const,
+    wordBreak: 'break-all' as const,
   },
   inputArea: {
     display: 'flex',
