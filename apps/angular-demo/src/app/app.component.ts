@@ -2,7 +2,6 @@ import { Component, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from
 import { FormsModule } from '@angular/forms';
 import { NgFor, NgIf } from '@angular/common';
 import { StreamingMarkdownComponent } from '@streaming-markdown/angular';
-import '@streaming-markdown/angular/styles';
 import { streamSimulator, demoContents } from './stream-simulator';
 
 interface Message {
