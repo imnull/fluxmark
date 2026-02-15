@@ -208,7 +208,7 @@ def fibonacci(n):
 
 ## 带链接的图片
 
-[![点击查看大图](https://via.placeholder.com/300x150/dd0031/ffffff?text=Angular)](https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=400&fit=crop)
+[![点击查看大图](https://images.unsplash.com/photo-1519501025264-65ba15a82390?w=300&h=150&fit=crop)](https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=400&fit=crop)
 
 > 💡 **观察要点**：
 > 1. 每张图片只会加载一次
