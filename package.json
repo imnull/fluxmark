@@ -11,8 +11,10 @@
     "test": "npm run test --workspaces",
     "dev": "npm run dev -w apps/demo",
     "dev:demo": "npm run dev -w apps/demo",
+    "dev:vue": "npm run dev -w apps/vue-demo",
     "dev:core": "npm run test -w packages/core -- --watch",
-    "dev:react": "npm run test -w packages/react -- --watch"
+    "dev:react": "npm run test -w packages/react -- --watch",
+    "dev:vue-lib": "npm run test -w packages/vue -- --watch"
   },
   "devDependencies": {
     "typescript": "^5.3.0"
