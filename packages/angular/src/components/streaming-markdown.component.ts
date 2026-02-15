@@ -11,6 +11,7 @@ import {
   OnInit,
   OnDestroy,
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
 } from '@angular/core';
 import { NgFor, NgIf } from '@angular/common';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
@@ -19,38 +20,35 @@ import { StreamingParser, type Fragment, type ParserOptions } from '@streaming-m
 @Component({
   selector: 'streaming-markdown',
   template: `
-    <div class="streaming-markdown" [class.md-streaming]="isStreaming" [class.md-complete]="!isStreaming" [class]="class">
-      <ng-container *ngFor="let fragment of fragments; trackBy: trackByKey">
+    <div class="streaming-markdown" [class.md-streaming]="isStreaming" [class.md-complete]="!isStreaming">
+      <ng-container *ngFor="let fragment of fragments; trackBy: trackByKey; let i = index">
 
         <!-- Heading -->
         <ng-container *ngIf="fragment.type === 'heading'">
-          <h1 *ngIf="getLevel(fragment) === 1" class="md-heading md-h1">{{ getContent(fragment) }}</h1>
-          <h2 *ngIf="getLevel(fragment) === 2" class="md-heading md-h2">{{ getContent(fragment) }}</h2>
-          <h3 *ngIf="getLevel(fragment) === 3" class="md-heading md-h3">{{ getContent(fragment) }}</h3>
-          <h4 *ngIf="getLevel(fragment) === 4" class="md-heading md-h4">{{ getContent(fragment) }}</h4>
-          <h5 *ngIf="getLevel(fragment) === 5" class="md-heading md-h5">{{ getContent(fragment) }}</h5>
-          <h6 *ngIf="getLevel(fragment) === 6" class="md-heading md-h6">{{ getContent(fragment) }}</h6>
+          <h1 *ngIf="getLevel(i) === 1" class="md-heading md-h1">{{ getContent(i) }}</h1>
+          <h2 *ngIf="getLevel(i) === 2" class="md-heading md-h2">{{ getContent(i) }}</h2>
+          <h3 *ngIf="getLevel(i) === 3" class="md-heading md-h3">{{ getContent(i) }}</h3>
+          <h4 *ngIf="getLevel(i) === 4" class="md-heading md-h4">{{ getContent(i) }}</h4>
+          <h5 *ngIf="getLevel(i) === 5" class="md-heading md-h5">{{ getContent(i) }}</h5>
+          <h6 *ngIf="getLevel(i) === 6" class="md-heading md-h6">{{ getContent(i) }}</h6>
         </ng-container>
 
         <!-- Paragraph -->
-        <p *ngIf="fragment.type === 'paragraph'" class="md-paragraph" [innerHTML]="getSafeHtml(fragment)"></p>
+        <p *ngIf="fragment.type === 'paragraph'" class="md-paragraph" [innerHTML]="getSafeHtml(i)"></p>
 
         <!-- CodeBlock -->
-        <pre *ngIf="fragment.type === 'codeblock'" class="md-codeblock">
-          <code *ngIf="getLang(fragment)" class="language-{{ getLang(fragment) }}">{{ getCode(fragment) }}</code>
-          <code *ngIf="!getLang(fragment)">{{ getCode(fragment) }}</code>
-        </pre>
+        <pre *ngIf="fragment.type === 'codeblock'" class="md-codeblock"><code [class]="getCodeClass(i)">{{ getCode(i) }}</code></pre>
 
         <!-- List -->
         <ng-container *ngIf="fragment.type === 'list'">
-          <ul *ngIf="!isOrdered(fragment)" class="md-list md-unordered-list">
-            <li *ngFor="let item of getItems(fragment)" class="md-list-item" [class.md-task-item]="item.checked !== undefined">
+          <ul *ngIf="!isOrdered(i)" class="md-list md-unordered-list">
+            <li *ngFor="let item of getItems(i)" class="md-list-item" [class.md-task-item]="item.checked !== undefined">
               <input *ngIf="item.checked !== undefined" type="checkbox" [checked]="item.checked" readonly class="md-task-checkbox" />
               {{ item.content }}
             </li>
           </ul>
-          <ol *ngIf="isOrdered(fragment)" class="md-list md-ordered-list">
-            <li *ngFor="let item of getItems(fragment)" class="md-list-item" [class.md-task-item]="item.checked !== undefined">
+          <ol *ngIf="isOrdered(i)" class="md-list md-ordered-list">
+            <li *ngFor="let item of getItems(i)" class="md-list-item" [class.md-task-item]="item.checked !== undefined">
               <input *ngIf="item.checked !== undefined" type="checkbox" [checked]="item.checked" readonly class="md-task-checkbox" />
               {{ item.content }}
             </li>
@@ -58,17 +56,17 @@ import { StreamingParser, type Fragment, type ParserOptions } from '@streaming-m
         </ng-container>
 
         <!-- Blockquote -->
-        <blockquote *ngIf="fragment.type === 'blockquote'" class="md-blockquote" [class]="'md-blockquote-level-' + getLevel(fragment)">
-          <p>{{ getContent(fragment) }}</p>
+        <blockquote *ngIf="fragment.type === 'blockquote'" class="md-blockquote">
+          <p>{{ getContent(i) }}</p>
         </blockquote>
 
         <!-- Image -->
         <figure *ngIf="fragment.type === 'image'" class="md-image-wrapper">
-          <a *ngIf="getImageHref(fragment)" [href]="getImageHref(fragment)" target="_blank" rel="noopener noreferrer" class="md-image-link">
-            <img [src]="getImageSrc(fragment)" [alt]="getImageAlt(fragment)" [title]="getImageTitle(fragment)" loading="lazy" class="md-image" />
+          <a *ngIf="getImageHref(i)" [href]="getImageHref(i)" target="_blank" rel="noopener noreferrer" class="md-image-link">
+            <img [src]="getImageSrc(i)" [alt]="getImageAlt(i)" loading="lazy" class="md-image" />
           </a>
-          <img *ngIf="!getImageHref(fragment)" [src]="getImageSrc(fragment)" [alt]="getImageAlt(fragment)" [title]="getImageTitle(fragment)" loading="lazy" class="md-image" />
-          <figcaption *ngIf="getImageAlt(fragment)" class="md-image-caption">{{ getImageAlt(fragment) }}</figcaption>
+          <img *ngIf="!getImageHref(i)" [src]="getImageSrc(i)" [alt]="getImageAlt(i)" loading="lazy" class="md-image" />
+          <figcaption *ngIf="getImageAlt(i)" class="md-image-caption">{{ getImageAlt(i) }}</figcaption>
         </figure>
 
         <!-- ThematicBreak -->
@@ -76,14 +74,12 @@ import { StreamingParser, type Fragment, type ParserOptions } from '@streaming-m
 
         <!-- Incomplete (streaming) -->
         <div *ngIf="fragment.type === 'incomplete'" class="md-incomplete md-pending">
-          <p *ngIf="getPartialType(fragment) === 'paragraph'" class="md-paragraph md-incomplete-content">
-            {{ getAccumulatedContent(fragment) }}<span class="md-cursor">▋</span>
+          <p *ngIf="getPartialType(i) === 'paragraph'" class="md-paragraph md-incomplete-content">
+            {{ getAccumulatedContent(i) }}<span class="md-cursor">|</span>
           </p>
-          <pre *ngIf="getPartialType(fragment) === 'codeblock'" class="md-codeblock md-incomplete-content">
-            <code>{{ getAccumulatedContent(fragment) }}</code>
-          </pre>
-          <div *ngIf="getPartialType(fragment) !== 'paragraph' && getPartialType(fragment) !== 'codeblock'" class="md-raw md-incomplete-content">
-            {{ getAccumulatedContent(fragment) }}<span class="md-cursor">▋</span>
+          <pre *ngIf="getPartialType(i) === 'codeblock'" class="md-codeblock md-incomplete-content"><code>{{ getAccumulatedContent(i) }}</code></pre>
+          <div *ngIf="getPartialType(i) !== 'paragraph' && getPartialType(i) !== 'codeblock'" class="md-raw md-incomplete-content">
+            {{ getAccumulatedContent(i) }}<span class="md-cursor">|</span>
           </div>
         </div>
 
@@ -113,7 +109,7 @@ export class StreamingMarkdownComponent implements OnChanges, OnInit, OnDestroy 
   private previousIsComplete = false;
   private safeHtmlCache = new Map<string, SafeHtml>();
 
-  constructor(private sanitizer: DomSanitizer) {}
+  constructor(private sanitizer: DomSanitizer, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.parser = new StreamingParser(this.options);
@@ -149,6 +145,7 @@ export class StreamingMarkdownComponent implements OnChanges, OnInit, OnDestroy 
         }
         this.streamingTimer = setTimeout(() => {
           this.isStreaming = false;
+          this.cdr.markForCheck();
         }, 100);
       }
     } else {
@@ -176,74 +173,66 @@ export class StreamingMarkdownComponent implements OnChanges, OnInit, OnDestroy 
     return fragment.key;
   }
 
-  // Fragment data extractors
-  getLevel(fragment: Fragment): number {
-    const data = fragment.data as { level?: number };
-    return data?.level || 1;
+  // Data accessors using index
+  private getData(index: number): any {
+    return this.fragments[index]?.data || {};
   }
 
-  getContent(fragment: Fragment): string {
-    const data = fragment.data as { content?: string };
-    return data?.content || '';
+  getLevel(index: number): number {
+    return this.getData(index).level || 1;
   }
 
-  getCode(fragment: Fragment): string {
-    const data = fragment.data as { code?: string };
-    return data?.code || '';
+  getContent(index: number): string {
+    return this.getData(index).content || '';
   }
 
-  getLang(fragment: Fragment): string {
-    const data = fragment.data as { lang?: string };
-    return data?.lang || '';
+  getCode(index: number): string {
+    return this.getData(index).code || '';
   }
 
-  isOrdered(fragment: Fragment): boolean {
-    const data = fragment.data as { ordered?: boolean };
-    return data?.ordered || false;
+  getCodeClass(index: number): string {
+    const lang = this.getData(index).lang;
+    return lang ? `language-${lang}` : '';
   }
 
-  getItems(fragment: Fragment): { content: string; checked?: boolean; level: number }[] {
-    const data = fragment.data as { items?: { content: string; checked?: boolean; level: number }[] };
-    return data?.items || [];
+  isOrdered(index: number): boolean {
+    return this.getData(index).ordered || false;
   }
 
-  getImageSrc(fragment: Fragment): string {
-    const data = fragment.data as { src?: string };
-    return data?.src || '';
+  getItems(index: number): any[] {
+    return this.getData(index).items || [];
   }
 
-  getImageAlt(fragment: Fragment): string {
-    const data = fragment.data as { alt?: string };
-    return data?.alt || '';
+  getImageSrc(index: number): string {
+    return this.getData(index).src || '';
   }
 
-  getImageTitle(fragment: Fragment): string {
-    const data = fragment.data as { title?: string };
-    return data?.title || '';
+  getImageAlt(index: number): string {
+    return this.getData(index).alt || '';
   }
 
-  getImageHref(fragment: Fragment): string {
-    const data = fragment.data as { href?: string };
-    return data?.href || '';
+  getImageHref(index: number): string {
+    return this.getData(index).href || '';
   }
 
-  getPartialType(fragment: Fragment): string {
-    const data = fragment.data as { partialType?: string };
-    return data?.partialType || '';
+  getPartialType(index: number): string {
+    return this.getData(index).partialType || '';
   }
 
-  getAccumulatedContent(fragment: Fragment): string {
-    const data = fragment.data as { accumulatedContent?: string };
-    return data?.accumulatedContent || '';
+  getAccumulatedContent(index: number): string {
+    return this.getData(index).accumulatedContent || '';
   }
 
-  getSafeHtml(fragment: Fragment): SafeHtml {
+  getSafeHtml(index: number): SafeHtml {
+    const fragment = this.fragments[index];
+    if (!fragment) return '';
+
     const key = fragment.key;
     if (this.safeHtmlCache.has(key)) {
       return this.safeHtmlCache.get(key)!;
     }
 
-    const content = this.getContent(fragment);
+    const content = this.getContent(index);
     const processed = content
       .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
       .replace(/\*(.+?)\*/g, '<em>$1</em>')
