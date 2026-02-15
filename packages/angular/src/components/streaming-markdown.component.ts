@@ -62,7 +62,7 @@ import { StreamingParser, type Fragment, type ParserOptions } from '@streaming-m
 
         <!-- Image -->
         <figure *ngIf="fragment.type === 'image'" class="md-image-wrapper">
-          <a *ngIf="getImageHref(i)" [href]="getImageHref(i)" target="_blank" rel="noopener noreferrer" class="md-image-link">
+          <a *ngIf="getImageHref(i)" [href]="getImageHref(i)" target="_blank" rel="noopener noreferrer" class="md-image-link" style="text-decoration: none;">
             <img [src]="getImageSrc(i)" [alt]="getImageAlt(i)" loading="lazy" class="md-image" />
           </a>
           <img *ngIf="!getImageHref(i)" [src]="getImageSrc(i)" [alt]="getImageAlt(i)" loading="lazy" class="md-image" />
