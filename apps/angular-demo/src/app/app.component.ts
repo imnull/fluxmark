@@ -40,7 +40,7 @@ interface DemoOption {
             class="select"
           >
             @for (option of demoOptions; track option.value) {
-              <option [ngValue]="option.value">
+              <option [value]="option.value">
                 {{ option.label }}
               </option>
             }
