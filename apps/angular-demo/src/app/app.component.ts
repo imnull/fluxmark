@@ -1,6 +1,6 @@
 import { Component, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { NgClass } from '@angular/common';
+import { NgClass, NgFor, NgIf } from '@angular/common';
 import { StreamingMarkdownComponent } from '@streaming-markdown/angular';
 import '@streaming-markdown/angular/styles';
 import { streamSimulator, demoContents } from './stream-simulator';
@@ -20,7 +20,7 @@ interface DemoOption {
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [StreamingMarkdownComponent, FormsModule, NgClass],
+  imports: [StreamingMarkdownComponent, FormsModule, NgClass, NgFor, NgIf],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="container">
@@ -39,11 +39,9 @@ interface DemoOption {
             [disabled]="isStreaming"
             class="select"
           >
-            @for (option of demoOptions; track option.value) {
-              <option [value]="option.value">
-                {{ option.label }}
-              </option>
-            }
+            <option *ngFor="let option of demoOptions" [value]="option.value">
+              {{ option.label }}
+            </option>
           </select>
         </div>
 
@@ -79,14 +77,13 @@ interface DemoOption {
             {{ isStreaming ? '渲染中...' : '运行演示' }}
           </button>
 
-          @if (isStreaming) {
-            <button
-              (click)="stopStream()"
-              class="button danger-button"
-            >
-              停止
-            </button>
-          }
+          <button
+            *ngIf="isStreaming"
+            (click)="stopStream()"
+            class="button danger-button"
+          >
+            停止
+          </button>
 
           <button
             (click)="clearChat()"
