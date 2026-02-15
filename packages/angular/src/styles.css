@@ -1,0 +1,245 @@
+/**
+ * StreamingMarkdown 默认样式
+ * 
+ * 可根据需要覆盖这些样式
+ */
+
+/* ===== 容器 ===== */
+
+.streaming-markdown {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #333;
+  word-wrap: break-word;
+}
+
+.streaming-markdown.md-streaming {
+  /* 流式输入时的样式 */
+}
+
+.streaming-markdown.md-complete {
+  /* 完成后的样式 */
+}
+
+/* ===== Heading ===== */
+
+.md-heading {
+  margin: 1.5em 0 0.5em;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.md-h1 { font-size: 2em; border-bottom: 1px solid #eaecef; padding-bottom: 0.3em; }
+.md-h2 { font-size: 1.5em; border-bottom: 1px solid #eaecef; padding-bottom: 0.3em; }
+.md-h3 { font-size: 1.25em; }
+.md-h4 { font-size: 1em; }
+.md-h5 { font-size: 0.875em; }
+.md-h6 { font-size: 0.85em; color: #6a737d; }
+
+/* ===== Paragraph ===== */
+
+.md-paragraph {
+  margin: 0 0 1em;
+}
+
+.md-paragraph strong { font-weight: 600; }
+.md-paragraph em { font-style: italic; }
+.md-paragraph code {
+  background: rgba(175, 184, 193, 0.2);
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 85%;
+}
+
+/* ===== Code Block ===== */
+
+.md-codeblock {
+  background: #f6f8fa;
+  border-radius: 6px;
+  padding: 16px;
+  overflow-x: auto;
+  margin: 0 0 1em;
+  position: relative;
+}
+
+.md-codeblock code {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 85%;
+  line-height: 1.45;
+  color: #24292e;
+  background: transparent;
+  padding: 0;
+}
+
+/* 流式代码块 */
+.md-codeblock-streaming {
+  background: #f6f8fa;
+}
+
+.md-code-line {
+  min-height: 1.45em;
+  padding: 0 4px;
+}
+
+.md-code-line.md-incomplete {
+  background: rgba(255, 255, 0, 0.1);
+  border-left: 2px solid #ffd700;
+}
+
+.md-code-line.md-complete {
+  background: transparent;
+  border-left: 2px solid transparent;
+}
+
+.md-highlighting-indicator {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 8px;
+  height: 8px;
+  background: #0366d6;
+  border-radius: 50%;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* ===== List ===== */
+
+.md-list {
+  margin: 0 0 1em;
+  padding-left: 2em;
+}
+
+.md-ordered-list { list-style-type: decimal; }
+.md-unordered-list { list-style-type: disc; }
+
+.md-list-item {
+  margin: 0.25em 0;
+}
+
+.md-task-item {
+  list-style-type: none;
+  margin-left: -1.5em;
+}
+
+.md-task-checkbox {
+  margin-right: 0.5em;
+  vertical-align: middle;
+}
+
+/* ===== Blockquote ===== */
+
+.md-blockquote {
+  margin: 0 0 1em;
+  padding: 0 1em;
+  color: #6a737d;
+  border-left: 0.25em solid #dfe2e5;
+}
+
+.md-blockquote p {
+  margin: 0;
+}
+
+.md-blockquote-level-2 { border-left-color: #c6cbd1; }
+.md-blockquote-level-3 { border-left-color: #aeb4ba; }
+
+/* ===== Image ===== */
+
+.md-image-wrapper {
+  margin: 1em 0;
+}
+
+.md-image {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 4px;
+}
+
+.md-image.md-loading {
+  background: #f0f0f0;
+  min-height: 100px;
+}
+
+.md-image.md-loaded {
+  background: transparent;
+}
+
+.md-image-caption {
+  margin-top: 0.5em;
+  text-align: center;
+  font-size: 0.9em;
+  color: #666;
+}
+
+/* ===== Horizontal Rule ===== */
+
+.md-hr {
+  height: 0.25em;
+  padding: 0;
+  margin: 1.5em 0;
+  background: #e1e4e8;
+  border: 0;
+}
+
+/* ===== Incomplete / Streaming ===== */
+
+.md-incomplete {
+  position: relative;
+}
+
+.md-incomplete-content {
+  margin: 0;
+}
+
+.md-cursor {
+  display: inline-block;
+  width: 0.6em;
+  height: 1.2em;
+  background: #0366d6;
+  animation: blink 1s infinite;
+  vertical-align: text-bottom;
+  margin-left: 2px;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.md-pending::after {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: #0366d6;
+  border-radius: 50%;
+  margin-left: 4px;
+  animation: pulse 1s infinite;
+}
+
+/* ===== Unknown ===== */
+
+.md-unknown {
+  color: #999;
+  font-style: italic;
+}
+
+/* ===== Responsive ===== */
+
+@media (max-width: 768px) {
+  .streaming-markdown {
+    font-size: 14px;
+  }
+  
+  .md-codeblock {
+    padding: 12px;
+    font-size: 13px;
+  }
+}

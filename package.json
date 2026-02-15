@@ -12,9 +12,11 @@
     "dev": "npm run dev -w apps/demo",
     "dev:demo": "npm run dev -w apps/demo",
     "dev:vue": "npm run dev -w apps/vue-demo",
+    "dev:angular": "npm run dev -w apps/angular-demo",
     "dev:core": "npm run test -w packages/core -- --watch",
     "dev:react": "npm run test -w packages/react -- --watch",
-    "dev:vue-lib": "npm run test -w packages/vue -- --watch"
+    "dev:vue-lib": "npm run test -w packages/vue -- --watch",
+    "dev:angular-lib": "npm run test -w packages/angular -- --watch"
   },
   "devDependencies": {
     "typescript": "^5.3.0"
