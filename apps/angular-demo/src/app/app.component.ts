@@ -1,6 +1,6 @@
 import { Component, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { NgClass, NgFor, NgIf } from '@angular/common';
+import { NgClass } from '@angular/common';
 import { StreamingMarkdownComponent } from '@streaming-markdown/angular';
 import '@streaming-markdown/angular/styles';
 import { streamSimulator, demoContents } from './stream-simulator';
@@ -20,7 +20,7 @@ interface DemoOption {
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [StreamingMarkdownComponent, FormsModule, NgClass, NgFor, NgIf],
+  imports: [StreamingMarkdownComponent, FormsModule, NgClass],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="container">
@@ -39,12 +39,11 @@ interface DemoOption {
             [disabled]="isStreaming"
             class="select"
           >
-            <option
-              *ngFor="let option of demoOptions"
-              [ngValue]="option.value"
-            >
-              {{ option.label }}
-            </option>
+            @for (option of demoOptions; track option.value) {
+              <option [ngValue]="option.value">
+                {{ option.label }}
+              </option>
+            }
           </select>
         </div>
 
@@ -80,13 +79,14 @@ interface DemoOption {
             {{ isStreaming ? '渲染中...' : '运行演示' }}
           </button>
 
-          <button
-            *ngIf="isStreaming"
-            (click)="stopStream()"
-            class="button danger-button"
-          >
-            停止
-          </button>
+          @if (isStreaming) {
+            <button
+              (click)="stopStream()"
+              class="button danger-button"
+            >
+              停止
+            </button>
+          }
 
           <button
             (click)="clearChat()"
@@ -100,55 +100,59 @@ interface DemoOption {
 
       <!-- 聊天区域 -->
       <div class="chat-container" #chatContainer>
-        <div *ngIf="messages.length === 0" class="empty-state">
-          <div class="empty-icon">💬</div>
-          <p>选择一个演示或输入消息开始</p>
-        </div>
-
-        <div
-          *ngFor="let message of messages; trackBy: trackByMessage"
-          [ngClass]="['message', message.role === 'user' ? 'user-message' : 'ai-message']"
-        >
-          <div class="message-header">
-            <span class="message-role">
-              {{ message.role === 'user' ? '👤 用户' : '🤖 AI' }}
-            </span>
-            <span *ngIf="message.isStreaming" class="streaming-indicator">
-              ● 输入中
-            </span>
+        @if (messages.length === 0) {
+          <div class="empty-state">
+            <div class="empty-icon">💬</div>
+            <p>选择一个演示或输入消息开始</p>
           </div>
+        }
 
-          <!-- 用户消息 -->
-          <div *ngIf="message.role === 'user'" class="user-content">
-            {{ message.content }}
-          </div>
+        @for (message of messages; track message.id) {
+          <div [ngClass]="['message', message.role === 'user' ? 'user-message' : 'ai-message']">
+            <div class="message-header">
+              <span class="message-role">
+                {{ message.role === 'user' ? '👤 用户' : '🤖 AI' }}
+              </span>
+              @if (message.isStreaming) {
+                <span class="streaming-indicator">● 输入中</span>
+              }
+            </div>
 
-          <!-- AI 消息 -->
-          <ng-container *ngIf="message.role === 'assistant'">
-            <!-- 源码对照模式 -->
-            <div *ngIf="showSource" class="source-view">
-              <div class="source-panel">
-                <div class="source-label">📄 Markdown 源码</div>
-                <pre class="source-code">{{ message.content || '(空)' }}</pre>
+            <!-- 用户消息 -->
+            @if (message.role === 'user') {
+              <div class="user-content">
+                {{ message.content }}
               </div>
-              <div class="divider"></div>
-              <div class="render-panel">
-                <div class="source-label">🎨 渲染结果</div>
+            }
+
+            <!-- AI 消息 -->
+            @if (message.role === 'assistant') {
+              <!-- 源码对照模式 -->
+              @if (showSource) {
+                <div class="source-view">
+                  <div class="source-panel">
+                    <div class="source-label">📄 Markdown 源码</div>
+                    <pre class="source-code">{{ message.content || '(空)' }}</pre>
+                  </div>
+                  <div class="divider"></div>
+                  <div class="render-panel">
+                    <div class="source-label">🎨 渲染结果</div>
+                    <streaming-markdown
+                      [content]="message.content"
+                      class="chat-message"
+                    />
+                  </div>
+                </div>
+              } @else {
+                <!-- 正常渲染模式 -->
                 <streaming-markdown
                   [content]="message.content"
                   class="chat-message"
                 />
-              </div>
-            </div>
-
-            <!-- 正常渲染模式 -->
-            <streaming-markdown
-              *ngIf="!showSource"
-              [content]="message.content"
-              class="chat-message"
-            />
-          </ng-container>
-        </div>
+              }
+            }
+          </div>
+        }
       </div>
 
       <!-- 输入框 -->
@@ -517,10 +521,6 @@ export class AppComponent implements OnDestroy {
   private abortController: (() => void) | null = null;
 
   constructor(private cdr: ChangeDetectorRef) {}
-
-  trackByMessage(_index: number, message: Message): string {
-    return message.id;
-  }
 
   runDemo(): void {
     if (this.isStreaming) return;
